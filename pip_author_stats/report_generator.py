@@ -31,34 +31,32 @@ def generate_report(author):
     if df.empty or not pd.api.types.is_numeric_dtype(df['total_downloads']):
         return json.dumps({"message": "No valid download data available for any packages."})
 
-    # Convert int64 fields to native Python int for JSON serialization
-    df['total_downloads'] = df['total_downloads'].apply(lambda x: int(x) if pd.notnull(x) else x)
+    # Manually process each row and convert to appropriate types
+    detailed = []
+    for _, row in df.iterrows():
+        record = {}
+        for key, value in row.items():
+            # Convert pandas types to native Python types
+            if pd.api.types.is_integer_dtype(type(value)):
+                record[key] = int(value)
+            elif pd.api.types.is_float_dtype(type(value)):
+                record[key] = float(value)
+            elif pd.api.types.is_object_dtype(type(value)):
+                record[key] = str(value)
+            else:
+                record[key] = value
+        detailed.append(record)
 
     # Calculate total downloads
-    total_downloads = df['total_downloads'].sum()
+    total_downloads = sum(record['total_downloads'] for record in detailed if 'total_downloads' in record)
 
     summary = {
-        'Total Packages': len(df),
+        'Total Packages': len(detailed),
         'Total Downloads': total_downloads,
-        'Average Downloads': df['total_downloads'].mean() if not df.empty else 0,
-        'Max Downloads': df['total_downloads'].max() if not df.empty else 0,
-        'Min Downloads': df['total_downloads'].min() if not df.empty else 0
+        'Average Downloads': total_downloads / len(detailed) if detailed else 0,
+        'Max Downloads': max(record['total_downloads'] for record in detailed if 'total_downloads' in record),
+        'Min Downloads': min(record['total_downloads'] for record in detailed if 'total_downloads' in record),
+        'Package with Most Downloads': max(detailed, key=lambda x: x['total_downloads'])['package'] if detailed else None
     }
 
-    if not df.empty and 'total_downloads' in df and df['total_downloads'].max() > 0:
-        most_downloaded_package = df.sort_values('total_downloads', ascending=False).iloc[0]
-        summary['Package with Most Downloads'] = most_downloaded_package['package']
-
-    detailed = df.sort_values(by='total_downloads', ascending=False).to_dict(orient='records')
     return json.dumps({"Summary Report": summary, "Detailed Report": detailed}, indent=4)
-
-# Example usage
-# author = "eugene.evstafev"
-# combined_json_report = generate_report(author)
-# print(combined_json_report)
-
-
-# Example usage
-author = "eugene.evstafev"
-combined_json_report = generate_report(author)
-print(combined_json_report)

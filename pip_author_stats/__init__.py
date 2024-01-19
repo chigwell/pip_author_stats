@@ -1,1 +1,1 @@
-from report_generator import generate_report
+from .report_generator import generate_report

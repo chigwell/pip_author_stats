@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pip_author_stats',
-    version='0.0.1',
+    version='0.0.2',
     author='Eugene Evstafev',
     author_email='chigwel@gmail.com',
     description='A tool to generate statistics report for PyPI authors',
@@ -14,7 +14,8 @@ setup(
         'requests',
         'pandas',
         'matplotlib',
-        'pypistats'
+        'pypistats',
+        'bs4',
     ],
     classifiers=[
         'License :: OSI Approved :: MIT License',

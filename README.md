@@ -1,36 +1,37 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Downloads](https://static.pepy.tech/badge/pip-author-stats)](https://pepy.tech/project/pip-author-stats)
+
 # PyPI Author Stats Reporter
 
-This tool is designed to fetch and analyze package data from PyPI for a specific author. It generates comprehensive reports about the packages including total downloads, average downloads, and identifies the most downloaded package.
-
-## Features
-
-- Fetches package names associated with a specific PyPI author.
-- Retrieves download statistics for each package.
-- Generates a detailed JSON report including summary statistics and individual package data.
+The PyPI Author Stats Reporter is a Python package designed to fetch and analyze PyPI package data for a specific author. It generates comprehensive reports detailing package downloads and other statistics, offering valuable insights into the usage and popularity of an author's packages.
 
 ## Installation
 
-Ensure you have Python and the required packages installed:
+To install PyPI Author Stats Reporter, use pip:
 
 ```bash
-pip install requests pandas matplotlib json5 bs4
+pip install pip-author-stats
 ```
 
 ## Usage
 
-To use the script, simply run it with Python and specify the PyPI author:
+### As a Python Module
+
+PyPI Author Stats Reporter can also be integrated into your Python scripts.
+
+Example:
 
 ```python
-author = "your-pypi-author-username"
-report = generate_report(author)
+from pip_author_stats.report_generator import generate_report
+
+# Generate a report for a specific PyPI author
+report = generate_report('your-pypi-author-username')
 print(report)
 ```
 
-The script will output a JSON formatted report with detailed statistics about the author's packages on PyPI.
-
 ## Report Details
 
-The generated report contains:
+The generated report includes:
 
 - Total number of packages by the author.
 - Total number of downloads across all packages.
@@ -38,10 +39,34 @@ The generated report contains:
 - Maximum and minimum number of downloads for individual packages.
 - The name of the most downloaded package.
 
+## Output Example
+
+When you run PyPI Author Stats Reporter, it outputs a JSON formatted report with detailed statistics. Here is an example snippet:
+
+```json
+{
+  "Summary Report": {
+    "Total Packages": 5,
+    "Total Downloads": 15000,
+    "Average Downloads": 3000,
+    "Max Downloads": 5000,
+    "Min Downloads": 1000,
+    "Package with Most Downloads": "example-package"
+  },
+  "Detailed Report": [
+    {
+      "package": "example-package",
+      "total_downloads": 5000
+    },
+    // More package data...
+  ]
+}
+```
+
 ## Contributing
 
-Contributions to improve this script are welcome. Please feel free to fork, modify, and make pull requests.
+Contributions, issues, and feature requests are welcome! Feel free to fork, modify, and make pull requests to enhance the functionalities of this tool.
 
 ## License
 
-This script is open-sourced software licensed under the MIT license.
+[MIT](https://choosealicense.com/licenses/mit/)
