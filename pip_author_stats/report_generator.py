@@ -3,21 +3,30 @@ import pandas as pd
 from pypistats import python_major
 import matplotlib.pyplot as plt
 import json
-from bs4 import BeautifulSoup
+def process_row(row: pd.Series) -> pd.Series:
+    row['downloads'] = int(row['downloads'])
+    row['stars'] = int(row['stars'])
+    row['last_updated'] = pd.to_datetime(row['last_updated'])
+    return row
 
-def fetch_packages_by_author(author):
-    url = f"https://pypi.org/user/{author}"
-    response = requests.get(url)
-    soup = BeautifulSoup(response.content, 'html.parser')
-    package_names = [elem.find('h3', class_='package-snippet__title').text.strip() for elem in soup.find_all('a', class_='package-snippet') if elem.find('h3', class_='package-snippet__title')]
-    return package_names
+def calculate_summary_stats(df: pd.DataFrame) -> dict:
+    total_downloads = df['downloads'].sum()
+    average_stars = df['stars'].mean()
+    most_recent_update = df['last_updated'].max()
+    return {'total_downloads': total_downloads, 'average_stars': average_stars, 'most_recent_update': most_recent_update}
 
-def fetch_download_stats(package_name):
-    try:
-        response = python_major(package_name, format="json")
-        stats = json.loads(response) if isinstance(response, str) else response
-        if not stats.get('data'):
-            return {'package': package_name, 'total_downloads': 0}
+def generate_report(df: pd.DataFrame) -> None:
+    if df.empty:
+        print('Error: DataFrame is empty')
+        return
+
+    df = df.apply(process_row, axis=1)
+
+    stats = calculate_summary_stats(df)
+
+    print(f'Total downloads: {stats["total_downloads"]}')
+    print(f'Average stars: {stats["average_stars"]:.2f}')
+    print(f'Most recent update: {stats["most_recent_update"].date()}')
         total_downloads = sum(item.get('downloads', 0) for item in stats['data'])
         return {'package': package_name, 'total_downloads': total_downloads}
     except Exception as e:
